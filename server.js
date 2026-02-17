@@ -6,7 +6,7 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-// Connect Database
+// Connect to Database
 await connectDB();
 
 // Start Server
