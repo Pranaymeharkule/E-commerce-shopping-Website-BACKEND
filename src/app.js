@@ -3,7 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
+import swaggerUi from "swagger-ui-express";
+import specs from "./config/swagger.js";
 
 import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -17,7 +18,6 @@ const app = express();
 
 app.use(helmet());
 
-// Rate Limiter
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -25,17 +25,15 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-// Body Parser
 app.use(express.json());
-
-// Prevent NoSQL Injection
-app.use(mongoSanitize());
-
-// Enable CORS
 app.use(cors());
-
-// Logger
 app.use(morgan("dev"));
+
+/* ===============================
+   🚀 Swagger Docs
+================================= */
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 /* ===============================
    🚀 Routes
