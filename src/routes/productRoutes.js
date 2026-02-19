@@ -1,12 +1,16 @@
 import express from "express";
+
 import {
   createProduct,
   getProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  restoreProduct,   // ✅ MUST BE FROM CONTROLLER
 } from "../controllers/productController.js";
-import { protect } from "../middleware/authMiddleware.js";
+
+import { protect, adminOnly } from "../middleware/authMiddleware.js"; // ✅ ONLY THESE TWO
+
 import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
@@ -55,7 +59,7 @@ const router = express.Router();
  *       200:
  *         description: Products fetched successfully
  */
-router.get("/", protect, getProducts);
+router.get("/",  getProducts);
 
 /**
  * @swagger
@@ -164,5 +168,6 @@ router.put("/:id", protect, updateProduct);
  *         description: Product deleted successfully
  */
 router.delete("/:id", protect, deleteProduct);
+router.put("/:id/restore", protect, adminOnly, restoreProduct);
 
 export default router;

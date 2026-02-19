@@ -48,16 +48,23 @@ export const createProduct = asyncHandler(async (req, res) => {
    📥 Get All Products
 ================================= */
 export const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({ isActive: true }).sort({
-    createdAt: -1,
-  });
+  const { category } = req.query;
 
-  res.status(200).json({
+  let filter = { isActive: true };
+
+  if (category) {
+    filter.category = category;
+  }
+
+  const products = await Product.find(filter);
+
+  res.json({
     success: true,
     count: products.length,
     data: products,
   });
 });
+
 
 /* ===============================
    🔍 Get Single Product
@@ -118,5 +125,22 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Product deleted successfully",
+  });
+});
+
+export const restoreProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  product.isActive = true;
+  await product.save();
+
+  res.json({
+    success: true,
+    message: "Product restored successfully",
+    product,
   });
 });
